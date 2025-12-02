@@ -13,7 +13,7 @@ class NamedFunction:
 
     def __call__(self, completion, answer, prompt, state, parser, **kwargs):
         # This makes the class instance callable like a function
-        data_source = state["task"]
+        data_source = state["info"]["data_source"]
         solution_str = completion[0]["content"]
         ground_truth = answer
         extra_info = state["info"]

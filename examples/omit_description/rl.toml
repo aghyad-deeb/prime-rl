@@ -29,7 +29,7 @@ target_modules = [
 ]
 
 [orchestrator]
-batch_size = 48
+batch_size = 16
 rollouts_per_example = 16
 seq_len = 6000
 oversampling_factor = 2.0
