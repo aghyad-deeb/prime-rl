@@ -1,7 +1,7 @@
 .vscode/*
 *.ipynb
 *.jsonl
-!data/**/*.jsonl
+!datasets/**/*.jsonl
 configs/endpoints.py
 
 # Artifacts
