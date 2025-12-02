@@ -42,3 +42,5 @@ online_difficulty_filtering = true
 
 [[orchestrator.env]]
 id = "omit_description"
+
+[inference]

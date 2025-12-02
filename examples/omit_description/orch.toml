@@ -1,0 +1,16 @@
+batch_size = 48
+rollouts_per_example = 16
+seq_len = 6000
+oversampling_factor = 2.0
+
+[model]
+name = "Qwen/Qwen3-4B"
+
+[sampling]
+max_tokens = 6000
+
+[buffer]
+online_difficulty_filtering = true
+
+[[env]]
+id = "omit_description"
