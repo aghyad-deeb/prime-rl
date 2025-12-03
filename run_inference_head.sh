@@ -4,4 +4,5 @@ uv run inference \
     --tensor-parallel-size 4 \
     --data-parallel-size-local 2 \
     --data-parallel-address $DATA_PARALLEL_ADDRESS \
-    --data-parallel-rpc-port $DATA_PARALLEL_RPC_PORT
+    --data-parallel-rpc-port $DATA_PARALLEL_RPC_PORT \
+    --api-key $INFERENCE_SERVER_API_KEY

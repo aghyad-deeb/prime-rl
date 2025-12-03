@@ -7,4 +7,5 @@ uv run inference \
 	--data-parallel-address $DATA_PARALLEL_ADDRESS \
 	--data-parallel-rpc-port $DATA_PARALLEL_RPC_PORT \
 	--data-parallel-start-rank 2 \
+	--api-key $INFERENCE_SERVER_API_KEY \
 	--headless
