@@ -126,12 +126,17 @@ def prepare_batch(
     rollouts = copy.deepcopy(rollouts)
     max_seq_len = seq_len
 
+    print(f"{num_train_workers=}")
     all_samples = [prepare_sample(rollout, max_seq_len) for rollout in rollouts]
+    print(f"{len(all_samples)=}")
 
     micro_batches_list = packed_samples_into_micro_bs(all_samples, max_seq_len)
+    print(f"{len(micro_batches_list)=}")
+    print(f"{len(micro_batches_list[0])=}")
     micro_batches = [
         prepare_micro_batch_packing(micro_batch, max_seq_len, temperature) for micro_batch in micro_batches_list
     ]
+    print(f"{len(micro_batches)=}")
 
     num_padding_batch = -len(micro_batches) % num_train_workers
 
@@ -155,4 +160,5 @@ def prepare_batch(
             batches.append(micro_batches.pop(0))
         batches_per_gpu.append(batches)
 
+    print(f"{len(batches_per_gpu)=}")
     return batches_per_gpu

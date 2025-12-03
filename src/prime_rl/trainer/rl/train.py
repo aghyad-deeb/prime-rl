@@ -80,6 +80,7 @@ def train(config: RLTrainerConfig):
 
     # Initialize parallel dimensions
     parallel_dims = get_parallel_dims(config.model)
+    logger.debug(f"{parallel_dims=}")
     if config.model.cp > 1:
         raise ValueError(
             "CP is not supported for RL. No reason it shouldn't, we just didn't test it. If you need it, please open an issue."
@@ -221,6 +222,7 @@ def train(config: RLTrainerConfig):
         logger.info(f"Starting forward and backward pass ({batch_size=})")
         tensors = Tensors()  # Used to accumulate tensor statistics across micro-batches and ranks for logging
         for micro_step, micro_batch in enumerate(micro_batches):
+            logger.debug("just started loop")
             input_ids = micro_batch["input_ids"].to("cuda")
             position_ids = micro_batch["position_ids"].to("cuda")
             advantages = micro_batch["advantages"].to("cuda")
@@ -229,15 +231,20 @@ def train(config: RLTrainerConfig):
             temperature = micro_batch["temperature"]
 
             # Forward pass
+            logger.debug("before forward")
             with maybe_record_function("forward"), maybe_activation_offloading(config.model.ac_offloading):
                 logits = forward(model, input_ids, position_ids).float().contiguous()
+
+            logger.debug("after forwardy")
 
             shifted_logits = shift_logits(logits)
             shifted_logits = shifted_logits / temperature
             trainer_logprobs = selective_log_softmax(shifted_logits, input_ids)
 
             # Compute loss
+            logger.debug("before lengths")
             response_lengths = get_response_lengths(position_ids)
+            logger.debug("before loss")
             loss, loss_tensors = compute_loss(
                 trainer_logprobs=trainer_logprobs.squeeze().split(response_lengths),
                 inference_logprobs=inference_logprobs.squeeze().split(response_lengths),
@@ -248,20 +255,24 @@ def train(config: RLTrainerConfig):
             )
 
             # Compute entropy
+            logger.debug("before entropy")
             entropy = compute_entropy(shifted_logits)
 
             # Delete logits and shifted_logits before backward pass to avoid memory spike
             del logits, shifted_logits
 
             # Backward pass
+            logger.debug("before backward")
             with maybe_record_function("backward"):
                 loss.backward()
+            logger.debug("after backward")
 
             # Add relevant tensors to tensor dict for logging purposes
             tensors["trainer_probs"].append(torch.exp(trainer_logprobs)[loss_mask].detach().to("cpu"))
             tensors["inference_probs"].append(torch.exp(inference_logprobs)[loss_mask].detach().to("cpu"))
             tensors["entropy"].append(entropy[loss_mask].detach().to("cpu"))
             tensors["loss"].append(loss.detach().to("cpu").unsqueeze(0))
+            logger.debug("after appends")
 
             if is_tt_moe_model(model):
                 load_balance_stats = get_load_balance_stats(model)
@@ -270,6 +281,7 @@ def train(config: RLTrainerConfig):
                         tensors[k].append(v)
 
             # Add loss tensors to tensor dict for logging purposes
+            logger.debug("after 2nd appends")
             for key, loss_tensor in loss_tensors.items():
                 loss_tensor = loss_tensor.detach().to("cpu")
                 tensors[key].append(loss_tensor)
@@ -280,6 +292,8 @@ def train(config: RLTrainerConfig):
                 micro_step_message += f" | Max Vio: {tensors['max_vio'][-1].mean().item():.4f}"
             logger.debug(micro_step_message)
 
+        logger.debug(f"After training loop")
+
         # Optionally, clip the gradients
         grad_norm_dtensor = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=config.optim.max_norm)
         # Convert to CUDA if on CPU (needed for FSDP CPU offloading)
@@ -288,6 +302,7 @@ def train(config: RLTrainerConfig):
         grad_norm = grad_norm_dtensor.full_tensor()
 
         # Update the model parameters
+        logger.debug(f"before step")
         optimizer.step()
         optimizer.zero_grad()
 
@@ -304,7 +319,9 @@ def train(config: RLTrainerConfig):
             memory_profiler.step()
 
         # Synchronize the tensor metrics across all steps and ranks
+        logger.debug(f"before tensor stats")
         tensor_stats = tensors.compute_stats()
+        logger.debug(f"after tensor stats")
 
         # Compute step metrics
         num_local_tokens = seq_len * batch_size
