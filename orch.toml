@@ -2,14 +2,14 @@ batch_size = 16
 num_train_workers = 8 # Seems like this should match the num of gpus not dp actors
 rollouts_per_example = 16
 seq_len = 6000
-oversampling_factor = 2.0
+oversampling_factor = 8.0
 
 [model]
 name = "Qwen/Qwen3-32B"
 
 [wandb]
 project = "primerl_vs_verl"
-name = "primerl32"
+name = "primerl32_8offpolicy"
 
 [sampling]
 max_tokens = 6000
