@@ -67,6 +67,7 @@ async def orchestrate(config: OrchestratorConfig):
     )
     vf.setup_logging(level=config.log.vf_level.upper())
     logger.info("Starting orchestrator")
+    logger.debug(f"{config.num_train_workers=}")
 
     # Print warning if running in benchmark mode
     if config.bench:
@@ -299,6 +300,8 @@ async def orchestrate(config: OrchestratorConfig):
 
         step_path = get_rollout_dir(config.output_dir) / f"step_{progress.step}"
         step_path.mkdir(parents=True, exist_ok=True)
+        print(f"{len(all_data_ranks_batches)=}")
+        print(f"{len(all_data_ranks_batches[0])=}")
         for i, batches in enumerate(all_data_ranks_batches):
             batch_path = step_path / f"rank_{i}.pt"
             tmp_path = batch_path.with_suffix(".tmp")
