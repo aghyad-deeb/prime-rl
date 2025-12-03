@@ -1,5 +1,4 @@
-# On node 1
-uv run inference \
+uv run inference @ infer.toml \
 	--model.name "Qwen/Qwen3-32b" \
 	--data-parallel-size 6 \
 	--tensor-parallel-size 4 \
