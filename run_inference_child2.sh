@@ -1,5 +1,4 @@
 uv run inference @ infer.toml \
-	--model.name "Qwen/Qwen3-32b" \
 	--data-parallel-size 12 \
 	--tensor-parallel-size 2 \
 	--data-parallel-size-local 4 \
