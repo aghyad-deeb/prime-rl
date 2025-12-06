@@ -1,1 +1,4 @@
 enable_lora = false
+
+[model]
+name = "Qwen/Qwen3-32b" 
