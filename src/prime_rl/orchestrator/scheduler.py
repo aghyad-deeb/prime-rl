@@ -116,8 +116,8 @@ class Scheduler:
                 )
                 wait_for_ckpt_start_time = time.perf_counter()
                 #sync_wait_for_path(get_step_path(get_broadcast_dir(self.config.output_dir), next_ckpt_step) / "STABLE")
-                path = sync_wait_for_multiple_paths
-                next_ckpt_step = int(path.replace("STABLE", "")[:-1].split("step_")[-1])
+                path = sync_wait_for_multiple_paths(paths)
+                next_ckpt_step = int(str(path).replace("STABLE", "")[:-1].split("step_")[-1])
                 print(f"{next_ckpt_step=}")
                 self.wait_for_ckpt_time = time.perf_counter() - wait_for_ckpt_start_time
                 self.logger.debug(f"Waited for checkpoint {next_ckpt_step} for {self.wait_for_ckpt_time:.2f}s")
