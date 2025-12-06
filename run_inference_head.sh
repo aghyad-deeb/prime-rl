@@ -1,5 +1,5 @@
 uv run inference @ infer.toml \
-    --api-key $INFERENCE_SERVER_API_KEY
+    --api-key $INFERENCE_SERVER_API_KEY \
     --data-parallel-size 12 \
     --tensor-parallel-size 2 \
     --data-parallel-size-local 4 \
