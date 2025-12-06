@@ -20,6 +20,7 @@ from prime_rl.utils.utils import (
     get_latest_ckpt_step,
     get_step_path,
     sync_wait_for_path,
+    sync_wait_for_multiple_paths,
 )
 from prime_rl.utils.vf import generate_group
 
@@ -106,13 +107,18 @@ class Scheduler:
         next_ckpt_step = (
             async_away_ckpt_step if self.strict_async_level else max(async_away_ckpt_step, latest_ckpt_step)
         )
+        possible_ckpts = list(range(self.step - self.max_async_level, self.step))
+        paths = [get_step_path(get_broadcast_dir(self.config.output_dir), ckpt_num) / "STABLE" for ckpt_num in possible_ckpts]
         if next_ckpt_step > self.ckpt_step:
             if next_ckpt_step == async_away_ckpt_step:
                 self.logger.info(
                     f"Hit async barrier because we are >{self.max_async_level} step(s) async. Waiting for checkpoint {next_ckpt_step}"
                 )
                 wait_for_ckpt_start_time = time.perf_counter()
-                sync_wait_for_path(get_step_path(get_broadcast_dir(self.config.output_dir), next_ckpt_step) / "STABLE")
+                #sync_wait_for_path(get_step_path(get_broadcast_dir(self.config.output_dir), next_ckpt_step) / "STABLE")
+                path = sync_wait_for_multiple_paths
+                next_ckpt_step = int(path.replace("STABLE", "")[:-1].split("step_")[-1])
+                print(f"{next_ckpt_step=}")
                 self.wait_for_ckpt_time = time.perf_counter() - wait_for_ckpt_start_time
                 self.logger.debug(f"Waited for checkpoint {next_ckpt_step} for {self.wait_for_ckpt_time:.2f}s")
             self.logger.debug(
