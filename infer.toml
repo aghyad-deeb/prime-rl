@@ -1,4 +1,5 @@
 enable_lora = false
 
 [model]
-name = "Qwen/Qwen3-32b" 
+#name = "Qwen/Qwen3-32b" 
+name = "openai/gpt-oss-20b" 
