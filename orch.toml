@@ -8,7 +8,8 @@ max_off_policy_steps = 8
 
 [model]
 #name = "Qwen/Qwen3-32B"
-name = "openai/gpt-oss-20b"
+#name = "openai/gpt-oss-20b"
+name = "Qwen/Qwen3-30B-A3B"
 
 [wandb]
 project = "primerl_vs_verl"

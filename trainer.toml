@@ -2,7 +2,8 @@ max_async_level = 8
 
 [model]
 #name = "Qwen/Qwen3-32B"
-name = "openai/gpt-oss-20b"
+#name = "openai/gpt-oss-20b"
+name = "Qwen/Qwen3-30B-A3B"
 tp = 1
 dp_replicate = 1
 optimization_dtype = "bfloat16"
