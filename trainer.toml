@@ -1,4 +1,5 @@
 max_async_level = 8
+
 [model]
 name = "Qwen/Qwen3-32B"
 tp = 1
@@ -10,16 +11,16 @@ reduce_dtype = "bfloat16"
 
 [model.compile]
 
-[weight_broadcast]
-type = "filesystem"
-#save_sharded = false
-save_format = "safetensors"
-#adapter_only = true
-
 [optim]
 lr = 2e-5
 weight_decay = 0.0
 
+[weight_broadcast]
+type = "filesystem"
+#save_sharded = false
+#save_format = "safetensors"
+#adapter_only = true
+#
 #[model.experimental.lora]
 #rank = 8
 #alpha = 32
@@ -33,4 +34,3 @@ weight_decay = 0.0
 #    "up_proj",
 #    "down_proj"
 #]
-
