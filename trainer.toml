@@ -1,3 +1,5 @@
+max_async_level = 8
+
 [model]
 name = "Qwen/Qwen3-32B"
 tp = 1
